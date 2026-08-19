@@ -119,6 +119,16 @@ describe("useSidebarEdgeHoverPeek on window abandon", () => {
     unmount();
   });
 
+  it("mousemove over an unfocused window does not cancel the close", () => {
+    const { onClose, unmount } = setup({ enabled: true, peeked: true });
+    act(() => blurWindow());
+    vi.spyOn(document, "hasFocus").mockReturnValue(false);
+    act(() => moveTo(PEEK_REVEAL_THRESHOLD - 1));
+    act(() => vi.advanceTimersByTime(PEEK_ABANDON_CLOSE_DELAY_MS));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    unmount();
+  });
+
   it("does not reveal on edge hover while the window is unfocused", () => {
     vi.spyOn(document, "hasFocus").mockReturnValue(false);
     const { onReveal, unmount } = setup({ enabled: true, peeked: false });

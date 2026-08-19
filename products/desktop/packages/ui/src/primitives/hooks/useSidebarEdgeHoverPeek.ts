@@ -64,8 +64,10 @@ export function useSidebarEdgeHoverPeek({
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      // The pointer is back inside, so it hasn't abandoned the window.
-      cancelAbandonClose();
+      // The pointer being back inside only means the user returned when the
+      // window is focused; unfocused windows still receive mousemove, and a
+      // cursor parked over one must not keep a blur-scheduled close pending.
+      if (document.hasFocus()) cancelAbandonClose();
       const state = stateRef.current;
       const pointer =
         state.side === "left" ? e.clientX : window.innerWidth - e.clientX;
